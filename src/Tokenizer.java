@@ -8,8 +8,8 @@ public class Tokenizer {
     String normCorpusFolder;
 
     public Tokenizer(String docs, String normDocs) {
-        this.corpusFolder = StaticPath.HOME_DIR + "/files/" + docs;
-        this.normCorpusFolder = StaticPath.HOME_DIR + "/files/" + normDocs;
+        this.corpusFolder = Constants.HOME_DIR + "/files/" + docs;
+        this.normCorpusFolder = Constants.HOME_DIR + "/files/" + normDocs;
     }
 
     protected void normalizeCorpus() {
@@ -17,7 +17,7 @@ public class Tokenizer {
         File[] files = dir.listFiles();
         for (File f : files) {
             String content = ContentLoader.loadFileContent(f.getAbsolutePath());
-            TextNormalizer normalizer = new TextNormalizer(content);
+            TextNormalizer normalizer = new TextNormalizer(f.getName(), content);
             String normalized = normalizer.normalizeText();
             String normOutputFile = this.normCorpusFolder + "/" + f.getName();
             ContentWriter.writeContent(normOutputFile, normalized);

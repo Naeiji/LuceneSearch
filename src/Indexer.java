@@ -12,8 +12,8 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 public class Indexer {
-    String index;
-    String docs;
+    private String index;
+    private String docs;
     public int totalIndexed = 0;
 
     public Indexer(String indexFolder, String docsFolder) {
@@ -21,17 +21,10 @@ public class Indexer {
         this.docs = docsFolder;
     }
 
-    protected void makeIndexFolder(String repoName) {
-        new File(this.index + "/" + repoName).mkdir();
-        this.index = this.index + "/" + repoName;
-    }
-
     public void indexCorpusFiles() {
-        // index the files
         try {
             Directory dir = FSDirectory.open(new File(index).toPath());
             Analyzer analyzer = new StandardAnalyzer();
-            // Analyzer analyzer=new EnglishAnalyzer(Version.LUCENE_44);
             IndexWriterConfig config = new IndexWriterConfig(analyzer);
             IndexWriter writer = new IndexWriter(dir, config);
             indexDocs(writer, new File(this.docs));
@@ -98,8 +91,8 @@ public class Indexer {
     }
 
     public static void main(String[] args) {
-        String normCorpusFolder = StaticPath.HOME_DIR + "/files/norm-docs";
-        String indexFolder = StaticPath.HOME_DIR + "/files/index";
+        String normCorpusFolder = Constants.HOME_DIR + "/files/norm-docs";
+        String indexFolder = Constants.HOME_DIR + "/files/index";
         Indexer indexer = new Indexer(indexFolder, normCorpusFolder);
         indexer.indexCorpusFiles();
         System.out.println("Files indexed:" + indexer.totalIndexed);
