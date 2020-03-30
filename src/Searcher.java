@@ -24,7 +24,7 @@ public class Searcher {
     }
 
     protected String normalizeQuery(String review) {
-        return new TextNormalizer("", review).normalizeText();
+        return new PreProcessor().normalizeText("review", review);
     }
 
     public ArrayList<Integer> run() {
@@ -53,7 +53,7 @@ public class Searcher {
     }
 
     public static void main(String[] args) {
-        String review = "Manager is not good.";
+        String review = "Manager is not good";
         Searcher searcher = new Searcher(review);
         System.out.println(searcher.run());
     }

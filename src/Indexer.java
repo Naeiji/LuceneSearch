@@ -6,8 +6,13 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
+import org.apache.lucene.index.FieldInvertState;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.LeafReaderContext;
+import org.apache.lucene.search.CollectionStatistics;
+import org.apache.lucene.search.TermStatistics;
+import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
@@ -44,15 +49,12 @@ public class Indexer {
     }
 
     protected void indexDocs(IndexWriter writer, File file) {
-        // writing to the index file
         if (file.canRead()) {
             if (file.isDirectory()) {
                 String[] files = file.list();
-                // an IO error could occur
-                if (files != null) {
-                    for (int i = 0; i < files.length; i++) {
-                        indexDocs(writer, new File(file, files[i]));
-                    }
+
+                for (String i : files) {
+                    indexDocs(writer, new File(file, i));
                 }
             } else {
                 FileInputStream fis;
