@@ -15,19 +15,19 @@ import java.util.ArrayList;
 
 public class Searcher {
     private String indexFolder;
-    private String searchQuery;
+    private String review;
 
-    public Searcher(String indexFolder, String searchQuery) {
-        this.indexFolder = indexFolder;
-        this.searchQuery = normalizeQuery(searchQuery.toLowerCase());
-        System.out.println("Preprocessed:" + this.searchQuery);
+    public Searcher(String review) {
+        this.indexFolder = Constants.INDEX_FOLDER;
+        this.review = normalizeQuery(review.toLowerCase());
+        System.out.println("Preprocessed:" + this.review);
     }
 
-    protected String normalizeQuery(String searchQuery) {
-        return new TextNormalizer("", searchQuery).normalizeText();
+    protected String normalizeQuery(String review) {
+        return new TextNormalizer("", review).normalizeText();
     }
 
-    public ArrayList<Integer> executeQuery() {
+    public ArrayList<Integer> run() {
         IndexReader reader;
         IndexSearcher searcher;
         Analyzer analyzer;
@@ -39,7 +39,7 @@ public class Searcher {
             analyzer = new StandardAnalyzer();
             QueryParser parser = new QueryParser(Constants.CONTENTS, analyzer);
 
-            Query myquery = parser.parse(searchQuery);
+            Query myquery = parser.parse(review);
             TopDocs results = searcher.search(myquery, Constants.MAX_SEARCH);
             ScoreDoc[] hits = results.scoreDocs;
             ScoreDoc item = hits[0];
@@ -53,9 +53,8 @@ public class Searcher {
     }
 
     public static void main(String[] args) {
-        String indexFolder = Constants.HOME_DIR + "/files/index";
-        String searchQuery = "Manager";
-        Searcher searcher = new Searcher(indexFolder, searchQuery);
-        System.out.println(searcher.executeQuery());
+        String review = "Manager is not good.";
+        Searcher searcher = new Searcher(review);
+        System.out.println(searcher.run());
     }
 }

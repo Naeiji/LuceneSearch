@@ -12,13 +12,13 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 public class Indexer {
-    private String index;
     private String docs;
+    private String index;
     public int totalIndexed = 0;
 
-    public Indexer(String indexFolder, String docsFolder) {
-        this.index = indexFolder;
-        this.docs = docsFolder;
+    public Indexer() {
+        this.docs = Constants.DOCS_FOLDER;
+        this.index = Constants.INDEX_FOLDER;
     }
 
     public void indexCorpusFiles() {
@@ -36,7 +36,6 @@ public class Indexer {
     }
 
     protected void clearIndexFiles() {
-        // clearing index files
         File[] files = new File(this.index).listFiles();
         for (File f : files) {
             f.delete();
@@ -91,9 +90,7 @@ public class Indexer {
     }
 
     public static void main(String[] args) {
-        String normCorpusFolder = Constants.HOME_DIR + "/files/norm-docs";
-        String indexFolder = Constants.HOME_DIR + "/files/index";
-        Indexer indexer = new Indexer(indexFolder, normCorpusFolder);
+        Indexer indexer = new Indexer();
         indexer.indexCorpusFiles();
         System.out.println("Files indexed:" + indexer.totalIndexed);
     }
