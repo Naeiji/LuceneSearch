@@ -14,11 +14,9 @@ import java.io.File;
 import java.util.ArrayList;
 
 public class Searcher {
-    private String indexFolder;
     private String review;
 
     public Searcher(String review) {
-        this.indexFolder = Constants.INDEX_FOLDER;
         this.review = normalizeQuery(review.toLowerCase());
         System.out.println("Preprocessed:" + this.review);
     }
@@ -34,7 +32,7 @@ public class Searcher {
         ArrayList<Integer> resultedFiles = new ArrayList<>();
 
         try {
-            reader = DirectoryReader.open(FSDirectory.open(new File(indexFolder).toPath()));
+            reader = DirectoryReader.open(FSDirectory.open(new File(Constants.INDEX_FOLDER).toPath()));
             searcher = new IndexSearcher(reader);
             analyzer = new StandardAnalyzer();
             QueryParser parser = new QueryParser(Constants.CONTENTS, analyzer);

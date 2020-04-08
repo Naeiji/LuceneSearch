@@ -6,33 +6,20 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
-import org.apache.lucene.index.FieldInvertState;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.index.LeafReaderContext;
-import org.apache.lucene.search.CollectionStatistics;
-import org.apache.lucene.search.TermStatistics;
-import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 public class Indexer {
-    private String docs;
-    private String index;
-    public int totalIndexed = 0;
-
-    public Indexer() {
-        this.docs = Constants.DOCS_FOLDER;
-        this.index = Constants.INDEX_FOLDER;
-    }
+    private int totalIndexed = 0;
 
     public void indexCorpusFiles() {
         try {
-            Directory dir = FSDirectory.open(new File(index).toPath());
+            Directory dir = FSDirectory.open(new File(Constants.INDEX_FOLDER).toPath());
             Analyzer analyzer = new StandardAnalyzer();
-            IndexWriterConfig config = new IndexWriterConfig(analyzer);
-            IndexWriter writer = new IndexWriter(dir, config);
-            indexDocs(writer, new File(this.docs));
+            IndexWriter writer = new IndexWriter(dir, new IndexWriterConfig(analyzer));
+            indexDocs(writer, new File(Constants.DOCS_FOLDER));
             writer.close();
 
         } catch (IOException e) {
@@ -40,15 +27,7 @@ public class Indexer {
         }
     }
 
-    protected void clearIndexFiles() {
-        File[] files = new File(this.index).listFiles();
-        for (File f : files) {
-            f.delete();
-        }
-        System.out.println("Index cleared successfully.");
-    }
-
-    protected void indexDocs(IndexWriter writer, File file) {
+    public void indexDocs(IndexWriter writer, File file) {
         if (file.canRead()) {
             if (file.isDirectory()) {
                 String[] files = file.list();
@@ -64,16 +43,11 @@ public class Indexer {
                     return;
                 }
                 try {
-                    // make a new, empty document
                     Document doc = new Document();
                     Field pathField = new StringField("path", file.getPath(), Field.Store.YES);
                     doc.add(pathField);
                     Field contentField = new TextField("contents", new BufferedReader(new InputStreamReader(fis, "UTF-8")));
                     doc.add(contentField);
-
-                    // doc.add(new TextField("contents", new BufferedReader(
-                    // new InputStreamReader(fis, "UTF-8"))));
-                    // System.out.println("adding " + file);
 
                     writer.addDocument(doc);
                     totalIndexed++;
