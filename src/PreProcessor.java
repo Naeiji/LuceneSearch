@@ -44,19 +44,22 @@ public class PreProcessor {
         return this.splittedFile.toString().replaceAll(",", "").replace("[", "").replace("]", "");
     }
 
-    private void normalizeCorpus() {
-        File dir = new File(Constants.DOCS_FOLDER);
-        File[] files = dir.listFiles();
-        for (File f : files) {
-            String content = ContentLoader.loadFileContent(f.getAbsolutePath());
-            String normalized = normalizeText(f.getName(), content);
-            String normOutputFile = Constants.CORPUS_FOLDER + "/" + f.getName();
+    public void iterate(File file) {
+        if(file.isDirectory()) {
+            File[] files = file.listFiles();
+            for (File f : files) {
+                iterate(f);
+            }
+        } else if(file.getName().endsWith(".java") || file.getName().endsWith(".xml")) {
+            String content = ContentLoader.loadFileContent(file.getAbsolutePath());
+            String normalized = normalizeText(file.getName(), content);
+            String normOutputFile = Constants.CORPUS_FOLDER + "/" + file.getName();
             ContentWriter.writeContent(normOutputFile, normalized);
-            System.out.println("Done: " + f.getName());
+            System.out.println("Done: " + file.getName());
         }
     }
 
     public static void main(String[] args) {
-        new PreProcessor().normalizeCorpus();
+        new PreProcessor().iterate(new File(Constants.DOCS_FOLDER));
     }
 }

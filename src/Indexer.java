@@ -19,7 +19,7 @@ public class Indexer {
             Directory dir = FSDirectory.open(new File(Constants.INDEX_FOLDER).toPath());
             Analyzer analyzer = new StandardAnalyzer();
             IndexWriter writer = new IndexWriter(dir, new IndexWriterConfig(analyzer));
-            indexDocs(writer, new File(Constants.DOCS_FOLDER));
+            indexDocs(writer, new File(Constants.CORPUS_FOLDER));
             writer.close();
 
         } catch (IOException e) {
