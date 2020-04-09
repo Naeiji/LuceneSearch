@@ -9,5 +9,6 @@ public class Constants {
 
     public static int MAX_SEARCH = 10;
     public static String CONTENTS = "contents";
+    public static String PATH_FILE = "path";
 
 }

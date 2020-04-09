@@ -8,6 +8,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.similarities.TFIDFSimilarity;
 import org.apache.lucene.store.FSDirectory;
 
 import java.io.File;
@@ -40,9 +41,11 @@ public class Searcher {
             Query myquery = parser.parse(review);
             TopDocs results = searcher.search(myquery, Constants.MAX_SEARCH);
             ScoreDoc[] hits = results.scoreDocs;
-            ScoreDoc item = hits[0];
-            Document doc = searcher.doc(item.doc);
-            System.out.println(doc);
+            for (ScoreDoc hit: hits) {
+                Document doc = searcher.doc((hit.doc));
+                System.out.println(doc.toString() + " " + hit.score);
+            }
+
 
         } catch (Exception exc) {
             exc.printStackTrace();
@@ -51,7 +54,7 @@ public class Searcher {
     }
 
     public static void main(String[] args) {
-        String review = "Manager is not good";
+        String review = "Amazing App This is cool because if you put your phone in your pocket and take it out it automatically turns it on which can be very convenient if you are waiting for someone to notify you for something. Also- when you turn on you phone you can see all notifications and choose whether to open them or dimiss them with ease.";
         Searcher searcher = new Searcher(review);
         System.out.println(searcher.run());
     }

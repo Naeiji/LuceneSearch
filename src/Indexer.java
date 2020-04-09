@@ -8,6 +8,7 @@ import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.search.similarities.Similarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
@@ -15,6 +16,7 @@ public class Indexer {
     private int totalIndexed = 0;
 
     public void indexCorpusFiles() {
+
         try {
             Directory dir = FSDirectory.open(new File(Constants.INDEX_FOLDER).toPath());
             Analyzer analyzer = new StandardAnalyzer();
@@ -44,9 +46,9 @@ public class Indexer {
                 }
                 try {
                     Document doc = new Document();
-                    Field pathField = new StringField("path", file.getPath(), Field.Store.YES);
+                    Field pathField = new StringField(Constants.PATH_FILE, file.getPath(), Field.Store.YES);
                     doc.add(pathField);
-                    Field contentField = new TextField("contents", new BufferedReader(new InputStreamReader(fis, "UTF-8")));
+                    Field contentField = new TextField(Constants.CONTENTS, new BufferedReader(new InputStreamReader(fis, "UTF-8")));
                     doc.add(contentField);
 
                     writer.addDocument(doc);
