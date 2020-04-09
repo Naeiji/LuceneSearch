@@ -4,11 +4,8 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.search.similarities.TFIDFSimilarity;
+import org.apache.lucene.queryparser.surround.parser.ParseException;
+import org.apache.lucene.search.*;
 import org.apache.lucene.store.FSDirectory;
 
 import java.io.File;
@@ -23,7 +20,7 @@ public class Searcher {
     }
 
     protected String normalizeQuery(String review) {
-        return new PreProcessor().normalizeText("review", review);
+        return new PreProcessor().normalizeText(review);
     }
 
     public ArrayList<Integer> run() {
@@ -41,10 +38,12 @@ public class Searcher {
             Query myquery = parser.parse(review);
             TopDocs results = searcher.search(myquery, Constants.MAX_SEARCH);
             ScoreDoc[] hits = results.scoreDocs;
-            for (ScoreDoc hit: hits) {
+            for (ScoreDoc hit : hits) {
                 Document doc = searcher.doc((hit.doc));
                 System.out.println(doc.toString() + " " + hit.score);
             }
+
+            System.out.println(results.totalHits);
 
 
         } catch (Exception exc) {
