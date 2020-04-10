@@ -19,7 +19,7 @@ public class PreProcessor {
         ArrayList<String> splittedFile = new ArrayList<>();
 
         PorterStemmer ps = new PorterStemmer();
-        StringTokenizer st = new StringTokenizer(content, " ._():;={},\"\'@?*+-/\\\n\t<>$");
+        StringTokenizer st = new StringTokenizer(content, " ._()#:;={},\"\'@?*+-/\\\n\t<>$");
         while (st.hasMoreTokens()) {
             String token = st.nextToken();
             for (String word : token.split("(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])")) {

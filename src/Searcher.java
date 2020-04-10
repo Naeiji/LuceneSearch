@@ -53,7 +53,7 @@ public class Searcher {
     }
 
     public static void main(String[] args) {
-        String review = "Amazing App This is cool because if you put your phone in your pocket and take it out it automatically turns it on which can be very convenient if you are waiting for someone to notify you for something. Also- when you turn on you phone you can see all notifications and choose whether to open them or dimiss them with ease.";
+        String review = "Great but with its downsides (bugs) Awesome lockscreen for seeing and handling notifications. My favorite feature is that I can swipe from anywhere in any direction to unlock. Has a few (very) annoying (recent) bugs such as locking the screen while I'm using my phone if I get a notification or the proximity sensor causing unwanted locks while using";
         Searcher searcher = new Searcher(review);
         System.out.println(searcher.run());
     }
