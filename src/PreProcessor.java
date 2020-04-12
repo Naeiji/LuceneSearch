@@ -8,6 +8,7 @@ import java.util.StringTokenizer;
 
 public class PreProcessor {
     private ArrayList<String> stopWordList;
+    private ArrayList<String> contentProviders;
 
     public PreProcessor() {
         this.stopWordList = new ArrayList<>();
@@ -39,6 +40,10 @@ public class PreProcessor {
         return splittedFile.toString().replaceAll(",", "").replace("[", "").replace("]", "");
     }
 
+    public ArrayList<String> getContentProviders() {
+        return contentProviders;
+    }
+
     public void iterate(File file) {
         if (file.isDirectory()) {
             File[] files = file.listFiles();
@@ -51,14 +56,16 @@ public class PreProcessor {
             }
 
             String content = ContentLoader.loadFileContent(file.getAbsolutePath());
+
+            contentProviders = new ArrayList<>();
+            if(content.contains("content") || content.contains("provider") || content.contains("ContentProvider")) {
+                contentProviders.add(file.getPath());
+            }
+
             String normalized = normalizeText(content);
             String normOutputFile = file.getAbsolutePath().replace(Constants.DOCS_FOLDER, Constants.CORPUS_FOLDER);
             ContentWriter.writeContent(normOutputFile, normalized);
             System.out.println("Done: " + file.getName());
         }
-    }
-
-    public static void main(String[] args) {
-        new PreProcessor().iterate(new File(Constants.DOCS_FOLDER));
     }
 }

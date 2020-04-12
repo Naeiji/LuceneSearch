@@ -8,7 +8,7 @@ public class Constants {
     public static String CORPUS_FOLDER = HOME_DIR + "/files/norm-docs";
 
     public static int MAX_SEARCH = 10;
-    public static String CONTENTS = "contents";
-    public static String Numeric_Field = "numeric";
-
+    public static String PATH_FIELD = "path";
+    public static String TEXT_FIELD = "text";
+    public static String STRUCTURE_FIELD = "structure";
 }

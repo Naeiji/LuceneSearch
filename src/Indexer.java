@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.ArrayList;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -9,13 +10,15 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 public class Indexer {
-    private String HLC;
-    private String LLC;
+    private String[] HLC;
+    private String[] LLC;
     private int totalIndexed = 0;
+    private ArrayList<String> contentProviders;
 
-    public Indexer(String HLC, String LLC) {
+    public Indexer(String[] HLC, String[] LLC, ArrayList<String> contentProviders) {
         this.HLC = HLC;
         this.LLC = LLC;
+        this.contentProviders = contentProviders;
     }
 
     public void indexCorpusFiles() {
@@ -30,6 +33,20 @@ public class Indexer {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private boolean check(String category, String[] arr) {
+        for (String element : arr) {
+            if (element.equals(category)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public int getTotalIndexed() {
+        return totalIndexed;
     }
 
     public void indexDocs(IndexWriter writer, File file) {
@@ -50,39 +67,27 @@ public class Indexer {
                 try {
                     Document doc = new Document();
                     String path = file.getPath();
-                    int score = 0;
-                    switch (HLC) {
-                        case "Usage":
-                            if (LLC.equals("UI")) {
-                                if (path.contains("res") || path.contains("resources") || path.contains("ui") || path.contains("Activity")) {
-                                    score = 1;
-                                }
-                            }
-                            break;
-                        case "Compatibility":
-                            if(path.contains("AndroidManifest")) {
-                                score = 1;
-                            }
-                            break;
-                        case "Protection":
-                            if(LLC.equals("Privacy") && path.contains("AndroidManifest")) {
-                                score = 1;
-                            }
-                            break;
-                        case "Resources":
-                            if (path.contains("content") || path.contains("provider") || path.contains("ContentProvider")) {
-                                score = 1;
-                            }
-                            break;
-                        default:
-                            score = 0;
-
+                    String score = "zero";
+                    if (check("Usage", HLC) && check("UI", LLC)) {
+                        if (path.contains("res") || path.contains("resources") || path.contains("ui") || path.contains("Activity")) {
+                            score = "one";
+                        }
+                    } else if (check("Compatibility", HLC) || (check("Protection", HLC) && check("Privacy", LLC) )) {
+                        if (path.contains("AndroidManifest")) {
+                            score = "one";
+                        }
+                    } else if (check("Resources", HLC)) {
+                        if (contentProviders.contains(file.getPath())) {
+                            score = "one";
+                        }
                     }
 
-                    Field structureField = new NumericDocValuesField(Constants.Numeric_Field, score);
+                    Field pathField = new StringField(Constants.PATH_FIELD, file.getPath(), Field.Store.YES);
+                    doc.add(pathField);
+                    Field structureField = new StringField(Constants.STRUCTURE_FIELD, score, Field.Store.YES);
                     doc.add(structureField);
-                    Field contentField = new TextField(Constants.CONTENTS, new BufferedReader(new InputStreamReader(fis, "UTF-8")));
-                    doc.add(contentField);
+                    Field textField = new TextField(Constants.TEXT_FIELD, new BufferedReader(new InputStreamReader(fis, "UTF-8")));
+                    doc.add(textField);
 
                     writer.addDocument(doc);
                     totalIndexed++;
@@ -98,11 +103,5 @@ public class Indexer {
                 }
             }
         }
-    }
-
-    public static void main(String[] args) {
-        Indexer indexer = new Indexer("BOY", "boy");
-        indexer.indexCorpusFiles();
-        System.out.println("Files indexed:" + indexer.totalIndexed);
     }
 }
