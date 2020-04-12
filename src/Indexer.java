@@ -2,17 +2,21 @@ import java.io.*;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.StringField;
-import org.apache.lucene.document.TextField;
+import org.apache.lucene.document.*;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 public class Indexer {
+    private String HLC;
+    private String LLC;
     private int totalIndexed = 0;
+
+    public Indexer(String HLC, String LLC) {
+        this.HLC = HLC;
+        this.LLC = LLC;
+    }
 
     public void indexCorpusFiles() {
 
@@ -45,8 +49,38 @@ public class Indexer {
                 }
                 try {
                     Document doc = new Document();
-                    Field pathField = new StringField(Constants.PATH_FILE, file.getPath(), Field.Store.YES);
-                    doc.add(pathField);
+                    String path = file.getPath();
+                    int score = 0;
+                    switch (HLC) {
+                        case "Usage":
+                            if (LLC.equals("UI")) {
+                                if (path.contains("res") || path.contains("resources") || path.contains("ui") || path.contains("Activity")) {
+                                    score = 1;
+                                }
+                            }
+                            break;
+                        case "Compatibility":
+                            if(path.contains("AndroidManifest")) {
+                                score = 1;
+                            }
+                            break;
+                        case "Protection":
+                            if(LLC.equals("Privacy") && path.contains("AndroidManifest")) {
+                                score = 1;
+                            }
+                            break;
+                        case "Resources":
+                            if (path.contains("content") || path.contains("provider") || path.contains("ContentProvider")) {
+                                score = 1;
+                            }
+                            break;
+                        default:
+                            score = 0;
+
+                    }
+
+                    Field structureField = new NumericDocValuesField(Constants.Numeric_Field, score);
+                    doc.add(structureField);
                     Field contentField = new TextField(Constants.CONTENTS, new BufferedReader(new InputStreamReader(fis, "UTF-8")));
                     doc.add(contentField);
 
@@ -67,7 +101,7 @@ public class Indexer {
     }
 
     public static void main(String[] args) {
-        Indexer indexer = new Indexer();
+        Indexer indexer = new Indexer("BOY", "boy");
         indexer.indexCorpusFiles();
         System.out.println("Files indexed:" + indexer.totalIndexed);
     }
