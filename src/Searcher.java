@@ -39,7 +39,7 @@ public class Searcher {
             TopDocs results = searcher.search(myquery, Constants.MAX_SEARCH);
             ScoreDoc[] hits = results.scoreDocs;
             for (ScoreDoc hit : hits) {
-                Document doc = searcher.doc((hit.doc));
+                Document doc = searcher.doc(hit.doc);
                 System.out.println(doc.toString() + " " + hit.score);
             }
 
@@ -53,7 +53,7 @@ public class Searcher {
     }
 
     public static void main(String[] args) {
-        String review = "Great but with its downsides (bugs) Awesome lockscreen for seeing and handling notifications. My favorite feature is that I can swipe from anywhere in any direction to unlock. Has a few (very) annoying (recent) bugs such as locking the screen while I'm using my phone if I get a notification or the proximity sensor causing unwanted locks while using";
+        String review = "Great app just needs a few additions This is a fantastic app for someone coming from the Motorola ecosystem that misses the active display as badly as I did. There needs to be a way to swipe the media player out of the way to access the normal acdisplay screen. There also needs to be an addition that brings up acdisplay when the phone is picked up after sitting for a set period of time. I have issues with the proximity wake but pulling it out of my pocket always seems to work. Otherwise this is a fantastic app!";
         Searcher searcher = new Searcher(review);
         System.out.println(searcher.run());
     }

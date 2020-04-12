@@ -19,7 +19,7 @@ public class PreProcessor {
         ArrayList<String> splittedFile = new ArrayList<>();
 
         PorterStemmer ps = new PorterStemmer();
-        StringTokenizer st = new StringTokenizer(content, " ._()#:;={},\"\'@?*+-/\\\n\t<>$");
+        StringTokenizer st = new StringTokenizer(content, " ._()#!:;={},\"\'@?*+-/\\\n\t<>$");
         while (st.hasMoreTokens()) {
             String token = st.nextToken();
             for (String word : token.split("(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])")) {
@@ -46,9 +46,13 @@ public class PreProcessor {
                 iterate(f);
             }
         } else if (file.getName().endsWith(".java") || file.getName().endsWith(".xml")) {
+            if (file.getAbsolutePath().contains("/values-")) {
+                return;
+            }
+
             String content = ContentLoader.loadFileContent(file.getAbsolutePath());
             String normalized = normalizeText(content);
-            String normOutputFile = Constants.CORPUS_FOLDER + "/" + file.getName();
+            String normOutputFile = file.getAbsolutePath().replace(Constants.DOCS_FOLDER, Constants.CORPUS_FOLDER);
             ContentWriter.writeContent(normOutputFile, normalized);
             System.out.println("Done: " + file.getName());
         }

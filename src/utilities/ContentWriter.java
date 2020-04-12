@@ -6,7 +6,9 @@ import java.io.FileWriter;
 public class ContentWriter {
     public static void writeContent(String outFile, String content) {
         try {
-            FileWriter fwriter = new FileWriter(new File(outFile));
+            File file = new File(outFile);
+            file.getParentFile().mkdirs();
+            FileWriter fwriter = new FileWriter(file);
             fwriter.write(content);
             fwriter.close();
         } catch (Exception exc) {
